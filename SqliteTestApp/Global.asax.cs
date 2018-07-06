@@ -18,6 +18,7 @@ namespace SqliteTestApp
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+			SQLiteDataAccess.LogSqliteDetails();
 			HomeController.StartWorker();
 		}
 	}

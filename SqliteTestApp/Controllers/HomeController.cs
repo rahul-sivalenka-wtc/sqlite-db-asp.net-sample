@@ -25,7 +25,7 @@ namespace SqliteTestApp.Controllers
 			List<Log> logs = SQLiteDataAccess.GetLogs();
 			return PartialView("TableView", logs);
 		}
-
+		
 		public static void StartWorker()
 		{
 			var interval = 2000;

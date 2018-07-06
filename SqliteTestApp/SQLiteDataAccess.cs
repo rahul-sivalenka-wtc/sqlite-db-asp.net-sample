@@ -24,9 +24,9 @@ namespace SqliteTestApp
 			var stopwatch = Stopwatch.StartNew();
 			var result = new List<Log>();
 
-			using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+			using (SQLiteConnection connection = GetConnection())
 			{
-				logger.Info($"######## Sqlite Connection #{connection.GetHashCode()} with default timeout of {connection.DefaultTimeout} and busy timeout of {connection.BusyTimeout}");
+				logger.Info($"######## [GetLogs] ######## Sqlite Connection #{connection.GetHashCode()} with default timeout of {connection.DefaultTimeout} and busy timeout of {connection.BusyTimeout}");
 				try
 				{
 					logger.Info($"Opening connection #{connection.GetHashCode()}");
@@ -79,6 +79,12 @@ namespace SqliteTestApp
 			return result;
 		}
 
+		public static void LogSqliteDetails()
+		{
+			logger.Info($@"SQLite Details:
+	Connection String: {ConnectionString}");
+		}
+
 		public static long GetCurrentCounter()
 		{
 			var query = $"SELECT MAX(Counter) FROM {TABLE_NAME}";
@@ -86,9 +92,9 @@ namespace SqliteTestApp
 			var stopwatch = Stopwatch.StartNew();
 			var result = default(long);
 
-			using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+			using (SQLiteConnection connection = GetConnection())
 			{
-				logger.Info($"######## Sqlite Connection #{connection.GetHashCode()} with default timeout of {connection.DefaultTimeout} and busy timeout of {connection.BusyTimeout}");
+				logger.Info($"######## [GetCurrentCounter] ######## Sqlite Connection #{connection.GetHashCode()} with default timeout of {connection.DefaultTimeout} and busy timeout of {connection.BusyTimeout}");
 				try
 				{
 					logger.Info($"Opening connection #{connection.GetHashCode()}");
@@ -156,9 +162,9 @@ namespace SqliteTestApp
 			#region Write operation
 			var query = $"INSERT INTO [{TABLE_NAME}] VALUES (@Counter, @RandomString)";
 
-			using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+			using (SQLiteConnection connection = GetConnection())
 			{
-				logger.Info($"######## Sqlite connection #{connection.GetHashCode()} with default timeout of {connection.DefaultTimeout} and busy timeout of {connection.BusyTimeout}");
+				logger.Info($"######## [AddLog] ######## Sqlite connection #{connection.GetHashCode()} with default timeout of {connection.DefaultTimeout} and busy timeout of {connection.BusyTimeout}");
 				try
 				{
 					logger.Info($"Opening connection #{connection.GetHashCode()}");
@@ -210,6 +216,16 @@ namespace SqliteTestApp
 			#endregion
 
 			return result;
+		}
+
+		private static SQLiteConnection GetConnection()
+		{
+			var connection = new SQLiteConnection(ConnectionString);
+
+			connection.BusyTimeout = 30000;
+			connection.DefaultTimeout = 30;
+
+			return connection;
 		}
 	}
 }
