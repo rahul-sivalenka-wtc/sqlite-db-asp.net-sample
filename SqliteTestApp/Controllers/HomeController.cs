@@ -12,30 +12,17 @@ namespace SqliteTestApp.Controllers
 	public class HomeController : Controller
 	{
 		private static Random random = new Random();
-		private static List<Log> logs = new List<Log>
-		{
-			new Log
-			{
-				Counter = 1,
-				RandomString = RandomString(10)
-			},
-			new Log
-			{
-				Counter = 2,
-				RandomString = RandomString(10)
-			}
-		};
 
 		public ActionResult Index()
 		{
-			List<Log> logs = GetLogs();
+			List<Log> logs = SQLiteDataAccess.GetLogs();
 			return View("Index", logs);
 		}
 
 		[HttpGet]
 		public PartialViewResult RefreshLogs()
 		{
-			List<Log> logs = GetLogs();
+			List<Log> logs = SQLiteDataAccess.GetLogs();
 			return PartialView("TableView", logs);
 		}
 
@@ -49,7 +36,7 @@ namespace SqliteTestApp.Controllers
 				{
 					try
 					{
-						AddLog();
+						SQLiteDataAccess.AddLog(RandomString(10));
 						Thread.Sleep(interval);
 					}
 					catch
@@ -58,26 +45,6 @@ namespace SqliteTestApp.Controllers
 					}
 				}
 			});
-		}
-
-		private static void AddLog()
-		{
-			var counter = GetCurrentCounter();
-			logs.Add(new Log
-			{
-				Counter = counter + 1,
-				RandomString = RandomString(10)
-			});
-		}
-
-		private static long GetCurrentCounter()
-		{
-			return logs.Count;
-		}
-
-		private static List<Log> GetLogs()
-		{
-			return logs;
 		}
 
 		private static string RandomString(int length)
