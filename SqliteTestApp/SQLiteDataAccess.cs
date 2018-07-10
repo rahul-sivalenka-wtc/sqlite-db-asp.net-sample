@@ -16,10 +16,11 @@ namespace SqliteTestApp
 		private static string ConnectionString => ConfigurationManager.ConnectionStrings["SQLiteConnectionString"].ConnectionString.ToString();
 		private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 		private static string TABLE_NAME = "Logs";
+		public static string FORCE_LOG_TABLE_NAME = "ForceLogs";
 
-		public static List<Log> GetLogs()
+		public static List<Log> GetLogs(string tableName = null)
 		{
-			var query = $"SELECT * FROM [{TABLE_NAME}] ORDER BY Counter DESC";
+			var query = $"SELECT * FROM [{tableName ?? TABLE_NAME}] ORDER BY Counter DESC";
 
 			var stopwatch = Stopwatch.StartNew();
 			var result = new List<Log>();
@@ -85,9 +86,9 @@ namespace SqliteTestApp
 	Connection String: {ConnectionString}");
 		}
 
-		public static long GetCurrentCounter()
+		public static long GetCurrentCounter(string tableName = null)
 		{
-			var query = $"SELECT MAX(Counter) FROM {TABLE_NAME}";
+			var query = $"SELECT MAX(Counter) FROM {tableName ?? TABLE_NAME}";
 
 			var stopwatch = Stopwatch.StartNew();
 			var result = default(long);
@@ -151,16 +152,16 @@ namespace SqliteTestApp
 			return result;
 		}
 
-		public static int AddLog(string randomString)
+		public static int AddLog(string randomString, string tableName = null)
 		{
 			var stopwatch = Stopwatch.StartNew();
 			int result = 0;
 
 			// Read operation
-			var currentCounter = GetCurrentCounter();
+			var currentCounter = GetCurrentCounter(tableName);
 
 			#region Write operation
-			var query = $"INSERT INTO [{TABLE_NAME}] VALUES (@Counter, @RandomString)";
+			var query = $"INSERT INTO [{tableName ?? TABLE_NAME}] VALUES (@Counter, @RandomString)";
 
 			using (SQLiteConnection connection = GetConnection())
 			{

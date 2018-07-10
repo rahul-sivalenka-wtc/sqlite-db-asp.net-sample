@@ -16,14 +16,26 @@ namespace SqliteTestApp.Controllers
 		public ActionResult Index()
 		{
 			List<Log> logs = SQLiteDataAccess.GetLogs();
-			return View("Index", logs);
+			List<Log> forceLogs = SQLiteDataAccess.GetLogs(SQLiteDataAccess.FORCE_LOG_TABLE_NAME);
+			return View("Index", new LogsViewModel
+			{
+				Logs = logs,
+				ForceLogs = forceLogs
+			});
 		}
 
 		[HttpGet]
-		public PartialViewResult RefreshLogs()
+		public PartialViewResult RefreshLogs(bool forceLogs = false)
 		{
-			List<Log> logs = SQLiteDataAccess.GetLogs();
+			List<Log> logs = SQLiteDataAccess.GetLogs(forceLogs ? SQLiteDataAccess.FORCE_LOG_TABLE_NAME : null);
 			return PartialView("TableView", logs);
+		}
+
+		public PartialViewResult AddForceLog()
+		{
+			SQLiteDataAccess.AddLog(RandomString(10), SQLiteDataAccess.FORCE_LOG_TABLE_NAME);
+
+			return RefreshLogs(true);
 		}
 		
 		public static void StartWorker()
@@ -53,5 +65,12 @@ namespace SqliteTestApp.Controllers
 			return new string(Enumerable.Repeat(chars, length)
 			  .Select(s => s[random.Next(s.Length)]).ToArray());
 		}
+	}
+
+	public class LogsViewModel
+	{
+		public List<Log> Logs { get; set; }
+
+		public List<Log> ForceLogs { get; set; }
 	}
 }

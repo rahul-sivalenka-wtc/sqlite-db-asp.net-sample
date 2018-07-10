@@ -1,38 +1,84 @@
-﻿@model List<SqliteTestApp.Models.Log>
+﻿@model SqliteTestApp.Controllers.LogsViewModel
 
 @{
     ViewBag.Title = "Home Page";
 }
 
 <script type="text/javascript">
-    function onRefresh() {
+    function onRefresh(forceLogs) {
         $.ajax({
             url: '@Url.Action("RefreshLogs", "Home")',
+            data: {
+                forceLogs: forceLogs
+            },
             success: function (res) {
-                $('#logs').html(res);
+                $(forceLogs ? '#forceLogs' : '#logs').html(res);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function onAddForceLog() {
+        $.ajax({
+            url: '@Url.Action("AddForceLog", "Home")',
+            success: function (res) {
+                $('#forceLogs').html(res);
+            },
+            error: function (err) {
+                console.log(err);
             }
         })
     }
+
+    $(function () {
+        var interval = setInterval(function () {
+            onRefresh();
+            onRefresh(true);
+        }, 5000);
+    });
 </script>
 
 <div style="margin-top:15px"></div>
 
-
-<div class="row" style="margin-bottom:15px">
-    <div class="col-xs-12" style="height:50px;z-index:10">
-        <a class="btn btn-default" style="position:fixed;" href="#" onclick="onRefresh()">Refresh</a>
-    </div>
-</div>
-
 <div class="row">
-    <div id="logs" class="col-xs-12">
-        @if (Model.Count > 0)
-        {
-            @Html.Partial("TableView", Model)
-        }
-        else
-        {
-            <text>No Logs!!</text>
-        }
+    <div class="col-xs-6">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1 class="panel-title">Logs</h1>
+            </div>
+        </div>
+        <div class="row" style="margin-top:15px;margin-bottom:15px">
+            <div class="col-xs-12" style="height:50px;z-index:10">
+                <a class="btn btn-default" style="position:fixed;" href="#" onclick="onRefresh()">Refresh</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="logs" class="col-xs-12">
+                @Html.Partial("TableView", Model.Logs)
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-6">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1 class="panel-title">Force Logs</h1>
+            </div>
+        </div>
+        <div class="row" style="margin-top:15px;margin-bottom:15px">
+            <div class="col-xs-12" style="height:50px;z-index:10">
+                <a class="btn btn-default" style="position:fixed;" href="#" onclick="onRefresh(true)">Refresh</a>
+                <a class="btn btn-default" style="position:fixed;margin-left: 80px;" href="#" onclick="onAddForceLog()">Force Add Log</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="forceLogs" class="col-xs-12">
+                @Html.Partial("TableView", Model.ForceLogs)
+            </div>
+        </div>
     </div>
 </div>

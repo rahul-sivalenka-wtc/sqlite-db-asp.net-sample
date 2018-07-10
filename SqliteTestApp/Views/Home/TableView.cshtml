@@ -1,25 +1,37 @@
-﻿@model IEnumerable<SqliteTestApp.Models.Log>
+﻿@model List<SqliteTestApp.Models.Log>
+
 
 <table class="table table-striped">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Counter)
+            Counter
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.RandomString)
+            RandomString
         </th>
-        @*<th></th>*@
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Counter)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RandomString)
-        </td>
-    </tr>
-}
+    @if (Model.Count > 0)
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Counter)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RandomString)
+                </td>
+            </tr>
+        }
 
+    }
+    else
+    {
+        <tr>
+            <td colspan="2">
+                No Logs!
+            </td>
+        </tr>
+    }
 </table>
