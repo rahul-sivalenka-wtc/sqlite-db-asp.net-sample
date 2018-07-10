@@ -57,6 +57,22 @@ namespace SqliteTestApp.Controllers
 					}
 				}
 			});
+
+			Task.Factory.StartNew(() =>
+			{
+				while (true)
+				{
+					try
+					{
+						SQLiteDataAccess.AddLog(RandomString(10), SQLiteDataAccess.FORCE_LOG_TABLE_NAME);
+						Thread.Sleep(interval * 2);
+					}
+					catch
+					{
+
+					}
+				}
+			});
 		}
 
 		private static string RandomString(int length)
